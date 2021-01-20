@@ -64,6 +64,8 @@ NSString *const kFLTFirebaseFirestoreTransactionChannelName =
   NSObject<FlutterBinaryMessenger> *_binaryMessenger;
 }
 
+static int registeredPluginCount = 0;
+
 FlutterStandardMethodCodec *_codec;
 
 + (void)initialize {
@@ -100,6 +102,7 @@ FlutterStandardMethodCodec *_codec;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+    registeredPluginCount++;
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:kFLTFirebaseFirestoreChannelName
                                   binaryMessenger:[registrar messenger]
@@ -154,8 +157,11 @@ FlutterStandardMethodCodec *_codec;
   }
 }
 
+
 - (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  [self cleanupWithCompletion:nil];
+    if (--registeredPluginCount == 0) {
+      [self cleanupWithCompletion:nil];
+    }
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)flutterResult {
