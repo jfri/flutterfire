@@ -1,3 +1,114 @@
+## 3.0.0
+
+> Note: This release has breaking changes.
+
+ - **FEAT**: setSettings now possible for android (#6367).
+ - **CHORE**: catch native error verifyBeforeUpdateEmail() (#6473).
+ - **BREAKING** **FEAT**: use<product>Emulator(host, port) API update (#6439).
+
+## 2.0.0
+
+> Note: This release has breaking changes.
+
+ - **FEAT**: setSettings now possible for android (#6367).
+ - **CHORE**: catch native error verifyBeforeUpdateEmail() (#6473).
+ - **BREAKING** **FEAT**: useAuthEmulator(host, port) API update.
+
+## 1.3.1
+
+ - Update a dependency to the latest release.
+
+## 1.3.0
+
+ - **FEAT**: add tenantId support  (#5736).
+
+## 1.2.0
+
+ - **FEAT**: add User.updateDisplayName and User.updatePhotoURL (#6213).
+
+## 1.1.3
+
+ - Update a dependency to the latest release.
+
+## 1.1.2
+
+ - **DOCS**: Add missing homepage/repository links (#6054).
+ - **CHORE**: publish packages (#6022).
+ - **CHORE**: publish packages.
+
+## 1.1.1
+
+ - Update a dependency to the latest release.
+
+## 1.1.0
+
+ - **FEAT**: OAuthProvider.parameters is now non-nullable (#5656).
+
+## 1.0.7
+
+ - **FIX**: ensure web is initialized before sending stream events (#5766).
+ - **CHORE**: update Web plugins to use Firebase JS SDK version 8.4.1 (#4464).
+
+## 1.0.6
+
+ - Update a dependency to the latest release.
+
+## 1.0.5
+
+ - Update a dependency to the latest release.
+
+## 1.0.4
+
+ - Update a dependency to the latest release.
+
+## 1.0.3
+
+ - Update a dependency to the latest release.
+
+## 1.0.2
+
+ - Update a dependency to the latest release.
+
+## 1.0.1
+
+ - **FIX**: correct use of underlying useEmulator API, sync not async (#5171).
+
+## 1.0.0
+
+ - Graduate package to a stable release. See pre-releases prior to this version for changelog entries.
+
+## 1.0.0-1.0.nullsafety.0
+
+ - Bump "firebase_auth_web" to `1.0.0-1.0.nullsafety.0`.
+
+## 0.4.0-1.1.nullsafety.3
+
+ - Update a dependency to the latest release.
+
+## 0.4.0-1.1.nullsafety.2
+
+ - Update a dependency to the latest release.
+
+## 0.4.0-1.1.nullsafety.1
+
+ - **REFACTOR**: pubspec & dependency updates (#4932).
+
+## 0.4.0-1.1.nullsafety.0
+
+ - **FEAT**: implement support for `useEmulator` (#4263).
+
+## 0.4.0-1.0.nullsafety.0
+
+ - **FIX**: bump firebase_core_* package versions to updated NNBD versioning format (#4832).
+
+## 0.4.0-nullsafety.1
+
+Bump firebase_auth_platform_interface to v4.0.0-nullsafety.1
+
+## 0.4.0-nullsafety.0
+
+Migrated to null safety (#4633)
+
 ## 0.3.2+6
 
  - Update a dependency to the latest release.

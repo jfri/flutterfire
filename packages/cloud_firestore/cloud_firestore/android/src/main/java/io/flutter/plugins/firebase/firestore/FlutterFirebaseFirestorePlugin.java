@@ -33,33 +33,32 @@ import io.flutter.plugin.common.StandardMethodCodec;
 import io.flutter.plugins.firebase.core.FlutterFirebasePlugin;
 import io.flutter.plugins.firebase.core.FlutterFirebasePluginRegistry;
 import io.flutter.plugins.firebase.firestore.streamhandler.DocumentSnapshotsStreamHandler;
+import io.flutter.plugins.firebase.firestore.streamhandler.LoadBundleStreamHandler;
 import io.flutter.plugins.firebase.firestore.streamhandler.OnTransactionResultListener;
 import io.flutter.plugins.firebase.firestore.streamhandler.QuerySnapshotsStreamHandler;
 import io.flutter.plugins.firebase.firestore.streamhandler.SnapshotsInSyncStreamHandler;
 import io.flutter.plugins.firebase.firestore.streamhandler.TransactionStreamHandler;
 import io.flutter.plugins.firebase.firestore.utils.ExceptionConverter;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class FlutterFirebaseFirestorePlugin
     implements FlutterFirebasePlugin, MethodCallHandler, FlutterPlugin, ActivityAware {
-
-  protected static final WeakHashMap<String, WeakReference<FirebaseFirestore>>
-      firestoreInstanceCache = new WeakHashMap<>();
+  protected static final HashMap<String, FirebaseFirestore> firestoreInstanceCache =
+      new HashMap<>();
 
   public static final String DEFAULT_ERROR_CODE = "firebase_firestore";
 
   private static final String METHOD_CHANNEL_NAME = "plugins.flutter.io/firebase_firestore";
 
   final StandardMethodCodec MESSAGE_CODEC =
-      new StandardMethodCodec(FlutterFirebaseFirestoreMessageCodec.INSTANCE);
+      new StandardMethodCodec(
+          io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestoreMessageCodec.INSTANCE);
 
   private BinaryMessenger binaryMessenger;
   private MethodChannel channel;
@@ -73,9 +72,9 @@ public class FlutterFirebaseFirestorePlugin
 
   protected static FirebaseFirestore getCachedFirebaseFirestoreInstanceForKey(String key) {
     synchronized (firestoreInstanceCache) {
-      WeakReference<FirebaseFirestore> existingInstance = firestoreInstanceCache.get(key);
+      FirebaseFirestore existingInstance = firestoreInstanceCache.get(key);
       if (existingInstance != null) {
-        return existingInstance.get();
+        return existingInstance;
       }
 
       return null;
@@ -85,18 +84,17 @@ public class FlutterFirebaseFirestorePlugin
   protected static void setCachedFirebaseFirestoreInstanceForKey(
       FirebaseFirestore firestore, String key) {
     synchronized (firestoreInstanceCache) {
-      WeakReference<FirebaseFirestore> existingInstance = firestoreInstanceCache.get(key);
+      FirebaseFirestore existingInstance = firestoreInstanceCache.get(key);
       if (existingInstance == null) {
-        firestoreInstanceCache.put(key, new WeakReference<>(firestore));
+        firestoreInstanceCache.put(key, firestore);
       }
     }
   }
 
   private static void destroyCachedFirebaseFirestoreInstanceForKey(String key) {
     synchronized (firestoreInstanceCache) {
-      WeakReference<FirebaseFirestore> existingInstance = firestoreInstanceCache.get(key);
+      FirebaseFirestore existingInstance = firestoreInstanceCache.get(key);
       if (existingInstance != null) {
-        existingInstance.clear();
         firestoreInstanceCache.remove(key);
       }
     }
@@ -118,17 +116,7 @@ public class FlutterFirebaseFirestorePlugin
     channel.setMethodCallHandler(null);
     channel = null;
 
-    for (String identifier : eventChannels.keySet()) {
-      eventChannels.get(identifier).setStreamHandler(null);
-    }
-    eventChannels.clear();
-
-    for (String identifier : streamHandlers.keySet()) {
-      streamHandlers.get(identifier).onCancel(null);
-    }
-    streamHandlers.clear();
-
-    transactionHandlers.clear();
+    removeEventListeners();
 
     binaryMessenger = null;
   }
@@ -292,6 +280,26 @@ public class FlutterFirebaseFirestorePlugin
         });
   }
 
+  private Task<QuerySnapshot> namedQueryGet(Map<String, Object> arguments) {
+    return Tasks.call(
+        cachedThreadPool,
+        () -> {
+          Source source = getSource(arguments);
+          String name = (String) Objects.requireNonNull(arguments.get("name"));
+          FirebaseFirestore firestore =
+              (FirebaseFirestore) Objects.requireNonNull(arguments.get("firestore"));
+
+          Query query = Tasks.await(firestore.getNamedQuery(name));
+
+          if (query == null) {
+            throw new NullPointerException(
+                "Named query has not been found. Please check it has been loaded properly via loadBundle().");
+          }
+
+          return Tasks.await(query.get(source));
+        });
+  }
+
   private Task<Void> documentSet(Map<String, Object> arguments) {
     return Tasks.call(
         cachedThreadPool,
@@ -428,7 +436,14 @@ public class FlutterFirebaseFirestorePlugin
             registerEventChannel(
                 METHOD_CHANNEL_NAME + "/snapshotsInSync", new SnapshotsInSyncStreamHandler()));
         return;
-
+      case "LoadBundle#snapshots":
+        result.success(
+            registerEventChannel(
+                METHOD_CHANNEL_NAME + "/loadBundle", new LoadBundleStreamHandler()));
+        return;
+      case "Firestore#namedQueryGet":
+        methodCallTask = namedQueryGet(call.arguments());
+        break;
       case "DocumentReference#get":
         methodCallTask = documentGet(call.arguments());
         break;
@@ -510,6 +525,9 @@ public class FlutterFirebaseFirestorePlugin
             FlutterFirebaseFirestorePlugin.destroyCachedFirebaseFirestoreInstanceForKey(
                 app.getName());
           }
+
+          removeEventListeners();
+
           return null;
         });
   }
@@ -554,5 +572,19 @@ public class FlutterFirebaseFirestorePlugin
     streamHandlers.put(identifier, handler);
 
     return identifier;
+  }
+
+  private void removeEventListeners() {
+    for (String identifier : eventChannels.keySet()) {
+      eventChannels.get(identifier).setStreamHandler(null);
+    }
+    eventChannels.clear();
+
+    for (String identifier : streamHandlers.keySet()) {
+      streamHandlers.get(identifier).onCancel(null);
+    }
+    streamHandlers.clear();
+
+    transactionHandlers.clear();
   }
 }

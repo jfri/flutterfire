@@ -86,7 +86,6 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
       details = @{
         kMessagingArgumentCode : code,
         kMessagingArgumentMessage : message,
-        kMessagingArgumentAdditionalData : @{},
       };
     }
 
@@ -593,18 +592,13 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
 
 - (void)messagingGetToken:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRMessaging *messaging = [FIRMessaging messaging];
-  NSString *senderId = arguments[@"senderId"];
-  if ([senderId isEqual:[NSNull null]]) {
-    senderId = [FIRApp defaultApp].options.GCMSenderID;
-  }
-  [messaging retrieveFCMTokenForSenderID:senderId
-                              completion:^(NSString *token, NSError *error) {
-                                if (error != nil) {
-                                  result.error(nil, nil, nil, error);
-                                } else {
-                                  result.success(@{@"token" : token});
-                                }
-                              }];
+  [messaging tokenWithCompletion:^(NSString *_Nullable token, NSError *_Nullable error) {
+    if (error != nil) {
+      result.error(nil, nil, nil, error);
+    } else {
+      result.success(@{@"token" : token});
+    }
+  }];
 }
 
 - (void)messagingGetAPNSToken:(id)arguments
@@ -620,18 +614,13 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
 - (void)messagingDeleteToken:(id)arguments
         withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRMessaging *messaging = [FIRMessaging messaging];
-  NSString *senderId = arguments[@"senderId"];
-  if ([senderId isEqual:[NSNull null]]) {
-    senderId = [FIRApp defaultApp].options.GCMSenderID;
-  }
-  [messaging deleteFCMTokenForSenderID:senderId
-                            completion:^(NSError *error) {
-                              if (error != nil) {
-                                result.error(nil, nil, nil, error);
-                              } else {
-                                result.success(nil);
-                              }
-                            }];
+  [messaging deleteTokenWithCompletion:^(NSError *_Nullable error) {
+    if (error != nil) {
+      result.error(nil, nil, nil, error);
+    } else {
+      result.success(nil);
+    }
+  }];
 }
 
 #pragma mark - FLTFirebasePlugin
@@ -977,7 +966,6 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
     return @{
       kMessagingArgumentCode : code,
       kMessagingArgumentMessage : message,
-      kMessagingArgumentAdditionalData : @{},
     };
   }
 
@@ -1012,7 +1000,6 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
   return @{
     kMessagingArgumentCode : code,
     kMessagingArgumentMessage : message,
-    kMessagingArgumentAdditionalData : @{},
   };
 }
 

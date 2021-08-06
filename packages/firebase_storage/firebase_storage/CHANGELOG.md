@@ -1,10 +1,88 @@
+## 10.0.1
+
+ - **FIX**: reinstate deprecated emulator apis (#6626).
+
+## 10.0.0
+
+> Note: This release has breaking changes.
+
+ - **FIX**: Use `mappedHost` instead of `host` (#6539).
+ - **CHORE**: update v2 embedding support (#6506).
+ - **CHORE**: rm deprecated jcenter repository (#6431).
+ - **BREAKING** **FEAT**: use<product>Emulator(host, port) API update.
+ - **BREAKING** **FEAT**: use<product>Emulator(host, port) API update (#6439).
+
+## 9.0.0
+
+> Note: This release has breaking changes.
+
+ - **CHORE**: rm deprecated jcenter repository (#6431).
+ - **BREAKING** **FEAT**: useStorageEmulator(host, port) API update.
+
+## 8.1.3
+
+ - Update a dependency to the latest release.
+
+## 8.1.2
+
+ - **FIX**: refFromUrl parse url (#6353).
+
+## 8.1.1
+
+ - **DOCS**: Add Flutter Favorite badge (#6190).
+
+## 8.1.0
+
+ - **FEAT**: add support for the Firebase Storage emulator via `useEmulator` (#5936).
+ - **FEAT**: upgrade Firebase JS SDK version to 8.6.1.
+ - **FIX**: podspec osx version checking script should use a version range instead of a single fixed version.
+
+## 8.0.6
+
+ - Update a dependency to the latest release.
+
+## 8.0.5
+
+ - **FIX**: secondary storage buckets now work as expected on Web (#5863).
+
+## 8.0.4
+
+ - Update a dependency to the latest release.
+
+## 8.0.3
+
+ - **FIX**: improve refFromURL http regex (#5682).
+
+## 8.0.2
+
+ - Update a dependency to the latest release.
+
+## 8.0.1
+
+ - **DOCS**: remove incorrect ARCHS in ios examples (#5450).
+ - **CHORE**: bump min Dart SDK constraint to 2.12.0 (#5430).
+ - **CHORE**: publish packages (#5429).
+ - **CHORE**: publish packages.
+ - **CHORE**: rm dev dependencies breaking CI (#5221).
+
+## 8.0.0
+
+ - Graduate package to a stable release. See pre-releases prior to this version for changelog entries.
+
+## 8.0.0-1.0.nullsafety.1
+
+ - Update a dependency to the latest release.
+
+## 8.0.0-1.0.nullsafety.0
+
+ - **REFACTOR**: Migrate Firebase Storage to nnbd (#4753).
+
 ## 7.0.0
 
 > Note: This release has breaking changes.
 
  - **FIX**: handle ArrayIndexOutOfBoundsException (fixes #4334) (#4638).
  - **FEAT**: add check on podspec to assist upgrading users deployment target.
- - **CI**: temporarily disable flaky storage test.
  - **BUILD**: commit Podfiles with 10.12 deployment target.
  - **BUILD**: remove default sdk version, version should always come from firebase_core, or be user defined.
  - **BUILD**: set macOS deployment target to 10.12 (from 10.11).

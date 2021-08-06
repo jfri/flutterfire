@@ -6,7 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:firebase_storage_platform_interface/firebase_storage_platform_interface.dart';
+
+import '../../firebase_storage_platform_interface.dart';
 import '../method_channel/method_channel_firebase_storage.dart';
 
 /// The Firebase Storage platform interface.
@@ -14,51 +15,47 @@ import '../method_channel/method_channel_firebase_storage.dart';
 /// This class should be extended by any classes implementing the plugin on
 /// other Flutter supported platforms.
 abstract class FirebaseStoragePlatform extends PlatformInterface {
-  @protected
-  // ignore: public_member_api_docs
-  final FirebaseApp appInstance;
-
-  /// The storage bucket of this instance.
-  final String /*!*/ bucket;
-
   /// Create an instance using [app]
-  FirebaseStoragePlatform({this.appInstance, this.bucket})
+  FirebaseStoragePlatform({this.appInstance, required this.bucket})
       : super(token: _token);
-
-  static final Object _token = Object();
 
   /// Returns a [FirebaseStoragePlatform] with the provided arguments.
   factory FirebaseStoragePlatform.instanceFor(
-      {FirebaseApp /*!*/ app, String /*!*/ bucket}) {
+      {required FirebaseApp app, required String bucket}) {
     return FirebaseStoragePlatform.instance
         .delegateFor(app: app, bucket: bucket);
   }
 
+  @protected
+  // ignore: public_member_api_docs
+  final FirebaseApp? appInstance;
+
+  /// The storage bucket of this instance.
+  final String bucket;
+
+  static final Object _token = Object();
+
   /// Returns the [FirebaseApp] for the current instance.
-  FirebaseApp /*!*/ get app {
+  FirebaseApp get app {
     if (appInstance == null) {
       return Firebase.app();
     }
 
-    return appInstance;
+    return appInstance!;
   }
 
-  static FirebaseStoragePlatform _instance;
+  static FirebaseStoragePlatform? _instance;
 
   /// The current default [FirebaseStoragePlatform] instance.
   ///
   /// It will always default to [MethodChannelFirebaseStorage]
   /// if no other implementation was provided.
   static FirebaseStoragePlatform get instance {
-    if (_instance == null) {
-      _instance = MethodChannelFirebaseStorage.instance;
-    }
-    return _instance;
+    return _instance ??= MethodChannelFirebaseStorage.instance;
   }
 
   /// Sets the [FirebaseStoragePlatform.instance]
   static set instance(FirebaseStoragePlatform instance) {
-    assert(instance != null);
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }
@@ -78,11 +75,21 @@ abstract class FirebaseStoragePlatform extends PlatformInterface {
     throw UnimplementedError('get.maxDownloadRetryTime is not implemented');
   }
 
+  /// The Storage emulator host this instance is configured to use. This
+  /// was required since iOS does not persist these settings on instances and
+  /// they need to be set every time when getting a `FIRStorage` instance.
+  String? emulatorHost;
+
+  /// The Storage emulator port this instance is configured to use. This
+  /// was required since iOS does not persist these settings on instances and
+  /// they need to be set every time when getting a `FIRStorage` instance.
+  int? emulatorPort;
+
   /// Enables delegates to create new instances of themselves if a none default
   /// [FirebaseApp] instance is required by the user.
   @protected
-  FirebaseStoragePlatform /*!*/ delegateFor(
-      {FirebaseApp /*!*/ app, String /*!*/ bucket}) {
+  FirebaseStoragePlatform delegateFor(
+      {required FirebaseApp app, required String bucket}) {
     throw UnimplementedError('delegateFor() is not implemented');
   }
 
@@ -93,6 +100,19 @@ abstract class FirebaseStoragePlatform extends PlatformInterface {
   ///   the bucket root.
   ReferencePlatform ref(String path) {
     throw UnimplementedError('ref() is not implemented');
+  }
+
+  /// Changes this instance to point to a Storage emulator running locally.
+  ///
+  /// Set the [host] (ex: localhost) and [port] (ex: 9199) of the local emulator.
+  ///
+  /// Note: Must be called immediately, prior to accessing storage methods.
+  /// Do not use with production credentials as emulator traffic is not encrypted.
+  ///
+  /// Note: storage emulator is not supported for web yet. firebase-js-sdk does not support
+  /// storage.useStorageEmulator until v9
+  Future<void> useStorageEmulator(String host, int port) {
+    throw UnimplementedError('useStorageEmulator() is not implemented');
   }
 
   /// The new maximum operation retry time in milliseconds.

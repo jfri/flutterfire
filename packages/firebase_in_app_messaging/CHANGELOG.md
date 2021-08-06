@@ -1,6 +1,42 @@
-## 0.3.0+1
+## 0.5.0+7
 
  - Update a dependency to the latest release.
+
+## 0.5.0+6
+
+ - Update a dependency to the latest release.
+
+## 0.5.0+5
+
+ - Update a dependency to the latest release.
+
+## 0.5.0+4
+
+ - Update a dependency to the latest release.
+
+## 0.5.0+3
+
+ - **DOCS**: Add missing homepage/repository links (#6054).
+
+## 0.5.0+2
+
+ - Update a dependency to the latest release.
+
+## 0.5.0+1
+
+ - Update a dependency to the latest release.
+
+## 0.5.0
+
+ - Migrate to null safety.
+
+## 0.4.0+1
+
+ - Update a dependency to the latest release.
+
+## 0.4.0
+
+ - This version is not null-safe but has been created to allow compatibility with other null-safe FlutterFire packages such as `firebase_core`.
 
 ## 0.3.0
 

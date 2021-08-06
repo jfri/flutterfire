@@ -16,8 +16,8 @@ import '../mock.dart';
 void main() {
   setupFirebaseMessagingMocks();
 
-  FirebaseApp app;
-  FirebaseMessagingPlatform messaging;
+  late FirebaseApp app;
+  late FirebaseMessagingPlatform messaging;
   final List<MethodCall> log = <MethodCall>[];
 
   group('$MethodChannelFirebaseMessaging', () {
@@ -26,7 +26,6 @@ void main() {
 
       handleMethodCall((call) async {
         log.add(call);
-
         switch (call.method) {
           case 'Messaging#deleteToken':
           case 'Messaging#sendMessage':
@@ -52,7 +51,7 @@ void main() {
             };
           case 'Messaging#setAutoInitEnabled':
             return {
-              'isAutoInitEnabled': true,
+              'isAutoInitEnabled': call.arguments['enabled'],
             };
           case 'Messaging#deleteInstanceID':
             return true;
@@ -131,7 +130,6 @@ void main() {
           'Messaging#deleteToken',
           arguments: <String, dynamic>{
             'appName': defaultFirebaseAppName,
-            'senderId': null,
           },
         ),
       ]);
@@ -162,7 +160,6 @@ void main() {
           'Messaging#getToken',
           arguments: <String, dynamic>{
             'appName': defaultFirebaseAppName,
-            'senderId': null,
           },
         ),
       ]);
@@ -203,8 +200,7 @@ void main() {
       ]);
     });
 
-    test('setAutoInitEnabled', () async {
-      expect(messaging.isAutoInitEnabled, isNull);
+    test('setAutoInitEnabled sets to true', () async {
       await messaging.setAutoInitEnabled(true);
       expect(messaging.isAutoInitEnabled, isTrue);
 
@@ -215,6 +211,22 @@ void main() {
           arguments: <String, dynamic>{
             'appName': defaultFirebaseAppName,
             'enabled': true
+          },
+        ),
+      ]);
+    });
+
+    test('setAutoInitEnabled sets to false', () async {
+      await messaging.setAutoInitEnabled(false);
+      expect(messaging.isAutoInitEnabled, isFalse);
+
+      // check native method was called
+      expect(log, <Matcher>[
+        isMethodCall(
+          'Messaging#setAutoInitEnabled',
+          arguments: <String, dynamic>{
+            'appName': defaultFirebaseAppName,
+            'enabled': false
           },
         ),
       ]);

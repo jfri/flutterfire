@@ -1,3 +1,91 @@
+## 10.0.4
+
+ - **DOCS**: update web example in line with flutter 2.2.0 generated `index.html` (#6398).
+ - **CHORE**: update v2 embedding support (#6506).
+ - **CHORE**: rm deprecated jcenter repository (#6431).
+
+## 10.0.3
+
+ - **DOCS**: update web example in line with flutter 2.2.0 generated `index.html` (#6398).
+ - **CHORE**: rm deprecated jcenter repository (#6431).
+
+## 10.0.2
+
+ - Update a dependency to the latest release.
+
+## 10.0.1
+
+ - **FIX**: Fix FirebaseMessaging.onMessage and onMessageOpenedApp potentially throwing (#6093).
+ - **DOCS**: Add Flutter Favorite badge (#6190).
+ - **CHORE**: fix broken messaging example (#6176).
+
+## 10.0.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **REFACTOR**: remove support for `senderId` named argument on `getToken` & `deleteToken` methods since the native Firebase SDKs no longer support it cross-platform.
+ - **FEAT**: implement `isSupported` support for Web (#6109).
+ - **FEAT**: upgrade Firebase JS SDK version to 8.6.1.
+ - **FIX**: podspec osx version checking script should use a version range instead of a single fixed version.
+
+## 9.1.4
+
+ - Update a dependency to the latest release.
+
+## 9.1.3
+
+ - Update a dependency to the latest release.
+
+## 9.1.2
+
+ - Update a dependency to the latest release.
+
+## 9.1.1
+
+ - Update a dependency to the latest release.
+
+## 9.1.0
+
+ - **FEAT**: android.tag property on Notification (#5452).
+ - **CHORE**: bump min Dart SDK constraint to 2.12.0 (#5430).
+ - **CHORE**: publish packages (#5429).
+ - **CHORE**: merge all analysis_options.yaml into one (#5329).
+ - **CHORE**: publish packages.
+ - **CHORE**: rm dev dependencies breaking CI (#5221).
+
+## 9.0.1
+
+ - Update a dependency to the latest release.
+
+## 9.0.0
+
+ - Graduate package to a stable release. See pre-releases prior to this version for changelog entries.
+
+## 9.0.0-1.0.nullsafety.2
+
+ - **FIX**: fix unhandled exception  (#4676).
+
+## 9.0.0-1.0.nullsafety.1
+
+ - **TESTS**: update mockito API usage in tests
+
+## 9.0.0-1.0.nullsafety.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **REFACTOR**: migrate to NNBD (#4909).
+ - **BREAKING**: the following deprecated APIs have been removed:
+    - `iOSNotificationSettings`.
+    - `requestNotificationPermissions` - use `requestPermission` instead.
+    - `autoInitEnabled()` - use `setAutoInitEnabled()` instead.
+    - `deleteInstanceID()` - use `deleteToken()` instead.
+    - `FirebaseMessaging()` - use `FirebaseMessaging.instance` instead.
+
+
+## 8.0.0-dev.14
+
+ - **DOCS**: fix messaging regex examples (#4649).
+
 ## 8.0.0-dev.13
 
 > Note: This release has breaking changes.

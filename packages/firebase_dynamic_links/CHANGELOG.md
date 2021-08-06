@@ -1,6 +1,58 @@
-## 0.7.0+1
+## 2.0.7
 
  - Update a dependency to the latest release.
+
+## 2.0.6
+
+ - Update a dependency to the latest release.
+
+## 2.0.5
+
+ - Update a dependency to the latest release.
+
+## 2.0.4
+
+ - Update a dependency to the latest release.
+
+## 2.0.3
+
+ - **DOCS**: Add missing homepage/repository links (#6054).
+
+## 2.0.2
+
+ - **TEST**: rewrite integration test to test for parameters explicitly.
+ - **REFACTOR**: upgrade example to v2 Android embedding.
+ - **FIX**: fix broken ios code from #4354.
+ - **FIX**: retry handling iOS universal link on network failure (#4354).
+ - **DOCS**: Open Android App directly without opening link in Browser. (#3127).
+ - **CI**: setup `firebase_dynamic_links` ci workflow.
+
+## 2.0.1
+
+ - **DOCS**: remove codelab link from readme.
+
+## 2.0.0
+
+ - Graduate package to a stable release. See pre-releases prior to this version for changelog entries.
+
+## 2.0.0-dev.1
+
+ - Update a dependency to the latest release.
+
+## 2.0.0-dev.0
+
+> Note: This release has breaking changes.
+
+ - **DOCS**: remove incorrect ARCHS in ios examples (#5450).
+ - **CHORE**: publish packages (#5429).
+ - **CHORE**: merge all analysis_options.yaml into one (#5329).
+ - **CHORE**: publish packages.
+ - **CHORE**: enable lints for firebase_dynamic_links (#5256).
+ - **BREAKING** **FEAT**: Migrate firebase_dynamic_links to sound null safety (#5368).
+
+## 0.8.0
+
+ - This version is not null-safe but has been created to allow compatibility with other null-safe FlutterFire packages such as `firebase_core`.
 
 ## 0.7.0
 

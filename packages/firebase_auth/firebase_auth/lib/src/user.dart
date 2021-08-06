@@ -17,14 +17,14 @@ class User {
   /// The users display name.
   ///
   /// Will be `null` if signing in anonymously or via password authentication.
-  String /*?*/ get displayName {
+  String? get displayName {
     return _delegate.displayName;
   }
 
   /// The users email address.
   ///
   /// Will be `null` if signing in anonymously.
-  String /*?*/ get email {
+  String? get email {
     return _delegate.email;
   }
 
@@ -52,7 +52,7 @@ class User {
   ///
   /// This property will be `null` if the user has not signed in or been has
   /// their phone number linked.
-  String /*?*/ get phoneNumber {
+  String? get phoneNumber {
     return _delegate.phoneNumber;
   }
 
@@ -60,7 +60,7 @@ class User {
   ///
   /// This property will be populated if the user has signed in or been linked
   /// with a 3rd party OAuth provider (such as Google).
-  String /*?*/ get photoURL {
+  String? get photoURL {
     return _delegate.photoURL;
   }
 
@@ -73,7 +73,7 @@ class User {
   ///
   /// This property maybe `null` or empty if the underlying platform does not
   /// support providing refresh tokens.
-  String /*?*/ get refreshToken {
+  String? get refreshToken {
     return _delegate.refreshToken;
   }
 
@@ -82,7 +82,7 @@ class User {
   /// This is a read-only property, which indicates the tenant ID used to sign
   /// in the current user. This is `null` if the user is signed in from the
   /// parent project.
-  String /*?*/ get tenantId {
+  String? get tenantId {
     return _delegate.tenantId;
   }
 
@@ -102,7 +102,7 @@ class User {
   ///  - Thrown if the user's last sign-in time does not meet the security
   ///    threshold. Use [User.reauthenticateWithCredential] to resolve. This
   ///    does not apply if the user is anonymous.
-  Future<void> delete() {
+  Future<void> delete() async {
     return _delegate.delete();
   }
 
@@ -148,7 +148,10 @@ class User {
   ///    user. The fields `email`, `phoneNumber`, and `credential`
   ///    ([AuthCredential]) may be provided, depending on the type of
   ///    credential. You can recover from this error by signing in with
-  ///    `credential` directly via [signInWithCredential].
+  ///    `credential` directly via [signInWithCredential]. Please note, you will
+  ///    not recover from this error if you're using a [PhoneAuthCredential] to link
+  ///    a provider to an account. Once an attempt to link an account has been made,
+  ///    a new sms code is required to sign in the user.
   /// - **email-already-in-use**:
   ///  - Thrown if the email corresponding to the credential already exists
   ///    among your users. When thrown while linking a credential to an existing
@@ -176,9 +179,10 @@ class User {
   ///  - Thrown if the credential is a [PhoneAuthProvider.credential] and the
   ///    verification ID of the credential is not valid.
   Future<UserCredential> linkWithCredential(AuthCredential credential) async {
-    assert(credential != null);
     return UserCredential._(
-        _auth, await _delegate.linkWithCredential(credential));
+      _auth,
+      await _delegate.linkWithCredential(credential),
+    );
   }
 
   /// Links the user account with the given phone number.
@@ -207,13 +211,16 @@ class User {
   ///  - Thrown if you have not enabled the phone authentication provider in the
   ///  Firebase Console. Go to the Firebase Console for your project, in the Auth
   ///  section and the Sign in Method tab and configure the provider.
-  Future<ConfirmationResult> linkWithPhoneNumber(String phoneNumber,
-      [RecaptchaVerifier /*?*/ verifier]) async {
-    assert(phoneNumber != null);
+  Future<ConfirmationResult> linkWithPhoneNumber(
+    String phoneNumber, [
+    RecaptchaVerifier? verifier,
+  ]) async {
     assert(phoneNumber.isNotEmpty);
     verifier ??= RecaptchaVerifier();
-    return ConfirmationResult._(this._auth,
-        await _delegate.linkWithPhoneNumber(phoneNumber, verifier.delegate));
+    return ConfirmationResult._(
+      _auth,
+      await _delegate.linkWithPhoneNumber(phoneNumber, verifier.delegate),
+    );
   }
 
   /// Re-authenticates a user using a fresh credential.
@@ -246,10 +253,12 @@ class User {
   ///  - Thrown if the credential is a [PhoneAuthProvider.credential] and the
   ///    verification ID of the credential is not valid.
   Future<UserCredential> reauthenticateWithCredential(
-      AuthCredential credential) async {
-    assert(credential != null);
+    AuthCredential credential,
+  ) async {
     return UserCredential._(
-        _auth, await _delegate.reauthenticateWithCredential(credential));
+      _auth,
+      await _delegate.reauthenticateWithCredential(credential),
+    );
   }
 
   /// Refreshes the current user, if signed in.
@@ -260,8 +269,9 @@ class User {
   /// Sends a verification email to a user.
   ///
   /// The verification process is completed by calling [applyActionCode].
-  Future<void> sendEmailVerification(
-      [ActionCodeSettings actionCodeSettings]) async {
+  Future<void> sendEmailVerification([
+    ActionCodeSettings? actionCodeSettings,
+  ]) async {
     await _delegate.sendEmailVerification(actionCodeSettings);
   }
 
@@ -272,7 +282,6 @@ class User {
   ///  - Thrown if the user does not have this provider linked or when the
   ///    provider ID given does not exist.
   Future<User> unlink(String providerId) async {
-    assert(providerId != null);
     return User._(_auth, await _delegate.unlink(providerId));
   }
 
@@ -296,7 +305,6 @@ class User {
   ///    threshold. Use [User.reauthenticateWithCredential] to resolve. This
   ///    does not apply if the user is anonymous.
   Future<void> updateEmail(String newEmail) async {
-    assert(newEmail != null);
     await _delegate.updateEmail(newEmail);
   }
 
@@ -314,7 +322,6 @@ class User {
   ///    threshold. Use [User.reauthenticateWithCredential] to resolve. This
   ///    does not apply if the user is anonymous.
   Future<void> updatePassword(String newPassword) async {
-    assert(newPassword != null);
     await _delegate.updatePassword(newPassword);
   }
 
@@ -328,14 +335,27 @@ class User {
   /// - **invalid-verification-id**:
   ///  - Thrown if the verification ID of the credential is not valid.
   Future<void> updatePhoneNumber(PhoneAuthCredential phoneCredential) async {
-    assert(phoneCredential != null);
     await _delegate.updatePhoneNumber(phoneCredential);
   }
 
+  /// Update the user name.
+  Future<void> updateDisplayName(String? displayName) {
+    return _delegate
+        .updateProfile(<String, String?>{'displayName': displayName});
+  }
+
+  /// Update the user's profile picture.
+  Future<void> updatePhotoURL(String? photoURL) {
+    return _delegate.updateProfile(<String, String?>{'photoURL': photoURL});
+  }
+
   /// Updates a user's profile data.
-  Future<void> updateProfile(
-      {String /*?*/ displayName, String /*?*/ photoURL}) async {
-    await _delegate.updateProfile(<String, String /*?*/ >{
+  @Deprecated(
+    'Will be removed in version 2.0.0. '
+    'Use updatePhotoURL and updateDisplayName instead.',
+  )
+  Future<void> updateProfile({String? displayName, String? photoURL}) {
+    return _delegate.updateProfile(<String, String?>{
       'displayName': displayName,
       'photoURL': photoURL,
     });
@@ -346,14 +366,26 @@ class User {
   ///
   /// If you have a custom email action handler, you can complete the
   /// verification process by calling [applyActionCode].
-  Future<void> verifyBeforeUpdateEmail(String newEmail,
-      [ActionCodeSettings actionCodeSettings]) async {
-    assert(newEmail != null);
+  Future<void> verifyBeforeUpdateEmail(
+    String newEmail, [
+    ActionCodeSettings? actionCodeSettings,
+  ]) async {
     await _delegate.verifyBeforeUpdateEmail(newEmail, actionCodeSettings);
   }
 
   @override
   String toString() {
-    return '$User(displayName: $displayName, email: $email, emailVerified: $emailVerified, isAnonymous: $isAnonymous, metadata: ${metadata.toString()}, phoneNumber: $phoneNumber, photoURL: $photoURL, providerData, ${providerData.toString()}, refreshToken: $refreshToken, tenantId: $tenantId, uid: $uid)';
+    return '$User('
+        'displayName: $displayName, '
+        'email: $email, '
+        'emailVerified: $emailVerified, '
+        'isAnonymous: $isAnonymous, '
+        'metadata: $metadata, '
+        'phoneNumber: $phoneNumber, '
+        'photoURL: $photoURL, '
+        'providerData, $providerData, '
+        'refreshToken: $refreshToken, '
+        'tenantId: $tenantId, '
+        'uid: $uid)';
   }
 }

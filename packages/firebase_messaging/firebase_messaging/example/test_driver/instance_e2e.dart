@@ -1,20 +1,21 @@
-// @dart = 2.9
-
 // Copyright 2020, the Chromium project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
+
+import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const bool SKIP_MANUAL_TESTS = bool.fromEnvironment('CI', defaultValue: false);
+// ignore: do_not_use_environment
+const bool SKIP_MANUAL_TESTS = bool.fromEnvironment('CI');
 
 void runInstanceTests() {
   group('$FirebaseMessaging.instance', () {
-    FirebaseApp app;
-    FirebaseMessaging messaging;
+    late FirebaseApp app;
+    late FirebaseMessaging messaging;
 
     setUpAll(() async {
       app = await Firebase.initializeApp();
@@ -36,12 +37,41 @@ void runInstanceTests() {
       });
     });
 
+    group('onMessage', () {
+      test('can listen multiple times', () async {
+        // regresion test for https://github.com/FirebaseExtended/flutterfire/issues/6009
+
+        StreamSubscription<RemoteMessage> _onMessageSubscription;
+        StreamSubscription<RemoteMessage> _onMessageOpenedAppSubscription;
+
+        _onMessageSubscription = FirebaseMessaging.onMessage.listen((_) {});
+        _onMessageOpenedAppSubscription =
+            FirebaseMessaging.onMessageOpenedApp.listen((_) {});
+
+        await _onMessageSubscription.cancel();
+        await _onMessageOpenedAppSubscription.cancel();
+
+        _onMessageSubscription = FirebaseMessaging.onMessage.listen((_) {});
+        _onMessageOpenedAppSubscription =
+            FirebaseMessaging.onMessageOpenedApp.listen((_) {});
+
+        await _onMessageSubscription.cancel();
+        await _onMessageOpenedAppSubscription.cancel();
+      });
+    });
+
     group('setAutoInitEnabled()', () {
       test('sets the value', () async {
         expect(messaging.isAutoInitEnabled, isTrue);
         await messaging.setAutoInitEnabled(false);
         expect(messaging.isAutoInitEnabled, isFalse);
       }, skip: kIsWeb);
+    });
+
+    group('isSupported()', () {
+      test('returns "true" value', () {
+        expect(messaging.isSupported(), isTrue);
+      });
     });
 
     group('requestPermission', () {
@@ -102,41 +132,15 @@ void runInstanceTests() {
 
     group('subscribeToTopic()', () {
       test('successfully subscribes from topic', () async {
-        final topic = 'test-topic';
+        const topic = 'test-topic';
         await messaging.subscribeToTopic(topic);
       }, skip: kIsWeb);
     });
 
     group('unsubscribeFromTopic()', () {
       test('successfully unsubscribes from topic', () async {
-        final topic = 'test-topic';
+        const topic = 'test-topic';
         await messaging.unsubscribeFromTopic(topic);
-      }, skip: kIsWeb);
-    });
-
-    // deprecated methods
-    group('FirebaseMessaging (deprecated)', () {
-      test('returns an instance with the current [FirebaseApp]', () async {
-        // ignore: deprecated_member_use
-        final testInstance = FirebaseMessaging();
-        expect(testInstance, isA<FirebaseMessaging>());
-        expect(testInstance.app, isA<FirebaseApp>());
-        expect(testInstance.app.name, defaultFirebaseAppName);
-      });
-    });
-
-    group('autoInitEnabled (deprecated)', () {
-      test('returns correct value', () async {
-        // should now be false due to previous setAutoInitEnabled test.
-        expect(messaging.isAutoInitEnabled, isFalse);
-        // ignore: deprecated_member_use
-        expect(await messaging.autoInitEnabled(), messaging.isAutoInitEnabled);
-
-        await messaging.setAutoInitEnabled(true);
-
-        expect(messaging.isAutoInitEnabled, isTrue);
-        // ignore: deprecated_member_use
-        expect(await messaging.autoInitEnabled(), messaging.isAutoInitEnabled);
       }, skip: kIsWeb);
     });
   });
